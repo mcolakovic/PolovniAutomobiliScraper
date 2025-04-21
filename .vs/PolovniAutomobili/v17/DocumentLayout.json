@@ -1,0 +1,37 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\matij\\Desktop\\PolovniAutomobili\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{117B84D8-2586-4B36-9BBD-96951B098AF6}|PolovniAutomobili\\PolovniAutomobili.csproj|c:\\users\\matij\\desktop\\polovniautomobili\\polovniautomobili\\carscraper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{117B84D8-2586-4B36-9BBD-96951B098AF6}|PolovniAutomobili\\PolovniAutomobili.csproj|solutionrelative:polovniautomobili\\carscraper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CarScraper.cs",
+              "DocumentMoniker": "C:\\Users\\matij\\Desktop\\PolovniAutomobili\\PolovniAutomobili\\CarScraper.cs",
+              "RelativeDocumentMoniker": "PolovniAutomobili\\CarScraper.cs",
+              "ToolTip": "C:\\Users\\matij\\Desktop\\PolovniAutomobili\\PolovniAutomobili\\CarScraper.cs",
+              "RelativeToolTip": "PolovniAutomobili\\CarScraper.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAWAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-04-21T11:19:24.834Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
