@@ -34,7 +34,7 @@ class CarScraper
         {
             parameters.Add(new KeyValuePair<string, string>("chassis[]", chassis));
         }
-
+         
         for (int page = 1; page <= 1; page++)
         {
             Console.WriteLine($"Obradjujem stranicu {page}...");
@@ -207,16 +207,19 @@ class CarScraper
         if (!transmission.Contains("manuelni"))
             return false;
 
-        var airConditioning = car.GetValueOrDefault("Menjač")?.ToLower();
+        var airConditioning = car.GetValueOrDefault("Klima")?.ToLower();
         if (airConditioning.Contains("nema"))
             return false;
 
-        var wheel = car.GetValueOrDefault("Menjač")?.ToLower();
+        var wheel = car.GetValueOrDefault("Strana volana")?.ToLower();
         if (wheel.Contains("desni"))
             return false;
 
-        if (!int.TryParse(car.GetValueOrDefault("Broj vrata")?.Trim(), out int doors) || doors < 4)
+        var doorsStr = car.GetValueOrDefault("Broj vrata");
+        var partsDoor = doorsStr.Split('/');
+        if (!int.TryParse(partsDoor[0].Trim(), out int doors) || doors < 4)
             return false;
+
 
         return true;
     }

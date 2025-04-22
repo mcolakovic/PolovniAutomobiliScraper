@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PolovniAutomobili")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+86a787c28323527307e9bcd400c0a6e1af760ece")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d3b753d88d0b9fe08b8322f6d7931fdd53d37060")]
 [assembly: System.Reflection.AssemblyProductAttribute("PolovniAutomobili")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PolovniAutomobili")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
