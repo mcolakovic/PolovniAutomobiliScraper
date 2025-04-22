@@ -35,7 +35,7 @@ class CarScraper
             parameters.Add(new KeyValuePair<string, string>("chassis[]", chassis));
         }
 
-        for (int page = 1; page <= 202; page++)
+        for (int page = 1; page <= 1; page++)
         {
             Console.WriteLine($"Obradjujem stranicu {page}...");
             parameters.Add(new KeyValuePair<string, string>("page", page.ToString()));
@@ -58,10 +58,11 @@ class CarScraper
                         if (!seenLinks.Contains(fullUrl))
                         {
                             var carData = await GetFullCarData(fullUrl);
-                            if (carData != null)
+                            if (carData != null && IsCriteriaFulfilled(carData))
                             {
+                                carData["Ocjena"] = CalculateRating(carData);
                                 carList.Add(carData);
-                                seenLinks.Add(fullUrl); // beležimo da smo obradili ovaj oglas
+                                seenLinks.Add(fullUrl);
                             }
                         }
                         await Task.Delay(RandomTime(1000, 2500));
@@ -81,10 +82,11 @@ class CarScraper
                         if (!seenLinks.Contains(fullUrl))
                         {
                             var carData = await GetFullCarData(fullUrl);
-                            if (carData != null)
+                            if (carData != null && IsCriteriaFulfilled(carData))
                             {
+                                carData["Ocjena"] = CalculateRating(carData);
                                 carList.Add(carData);
-                                seenLinks.Add(fullUrl); // beležimo da smo obradili ovaj oglas
+                                seenLinks.Add(fullUrl);
                             }
                         }
                         await Task.Delay(RandomTime(1000, 2500));
@@ -170,6 +172,7 @@ class CarScraper
                 ["Boja enterijera"] = specs.GetValueOrDefault("Boja enterijera"),
                 ["Plivajući zamajac"] = specs.GetValueOrDefault("Plivajući zamajac"),
                 ["Strana volana"] = specs.GetValueOrDefault("Strana volana"),
+                ["Ocjena"] = "0",
                 ["Link"] = url
             };
         }
@@ -179,6 +182,113 @@ class CarScraper
             return null;
         }
     }
+
+    static bool IsCriteriaFulfilled(Dictionary<string, string> car)
+    {
+        if (!int.TryParse(car.GetValueOrDefault("Kilometraža")?.Replace(".", "").Replace(" km", "").Trim(), out int km) || km > 200000)
+            return false;
+
+        if (!int.TryParse(car.GetValueOrDefault("Kubikaža")?.Replace(".", "").Replace(" cm3", "").Replace("cm", "").Trim(), out int cm3) || cm3 > 2000)
+            return false;
+
+        var powerStr = car.GetValueOrDefault("Snaga motora");
+        if (powerStr != null && powerStr.Contains("/"))
+        {
+            var parts = powerStr.Split('/');
+            if (!int.TryParse(parts[1].Split('(')[0].Trim(), out int power) || power < 50)
+                return false;
+        }
+
+        var emission = car.GetValueOrDefault("Emisiona klasa")?.ToLower();
+        if  (!(emission.Contains("euro 4") || emission.Contains("euro 5") || emission.Contains("euro 6")))
+            return false;
+
+        var transmission = car.GetValueOrDefault("Menjač")?.ToLower();
+        if (!transmission.Contains("manuelni"))
+            return false;
+
+        var airConditioning = car.GetValueOrDefault("Menjač")?.ToLower();
+        if (airConditioning.Contains("nema"))
+            return false;
+
+        var wheel = car.GetValueOrDefault("Menjač")?.ToLower();
+        if (wheel.Contains("desni"))
+            return false;
+
+        if (!int.TryParse(car.GetValueOrDefault("Broj vrata")?.Trim(), out int doors) || doors < 4)
+            return false;
+
+        return true;
+    }
+
+
+    static string CalculateRating(Dictionary<string, string> car)
+    {
+        try
+        {
+            int rating = 0;
+
+            if (double.TryParse(car.GetValueOrDefault("Cena")?.Replace(".", "").Replace("€", "").Trim(), out double price))
+            {
+                rating += price <=  4500 ? 5 : 3;
+            }
+
+            if (int.TryParse(car.GetValueOrDefault("Godište")?.Replace(".", "").Trim(), out int age))
+            {
+                rating += age >= 2020 ? 5 : 
+                          age >= 2015 ? 4 : 
+                          age >= 2010 ? 3 : 1;
+            }
+
+            if (car.TryGetValue("Kilometraža", out string kmStr))
+            {
+                kmStr = kmStr.Replace(".", "").Replace(" km", "").Trim();
+                if (int.TryParse(kmStr, out int km))
+                {
+                    rating += km <= 50000 ? 5 : 
+                              km <= 100000 ? 4 :
+                              km <= 150000 ? 3 :
+                              km <= 200000 ? 2 : 1;
+                }
+            }
+
+            if (car.TryGetValue("Kubikaža", out string kubikStr))
+            {
+                kubikStr = kubikStr.Replace(".", "").Replace(" cm3", "").Replace("cm", "").Trim();
+                if (int.TryParse(kubikStr, out int cm3))
+                {
+                    rating += cm3 <= 1000 ? 3 :
+                              cm3 <= 1300 ? 4 :
+                              cm3 <= 1600 ? 5 : 2;
+                }
+            }
+
+            if (car.TryGetValue("Snaga motora", out string powerStr))
+            {
+                var match = System.Text.RegularExpressions.Regex.Match(powerStr, @"\d+");
+                if (match.Success && int.TryParse(match.Value, out int power))
+                {
+                    rating += power >= 80 ? 5 :
+                              power >= 70 ? 4 :
+                              power >= 60 ? 3 : 2;
+                }
+            }
+
+            if (car.TryGetValue("Emisiona klasa", out string em))
+            {
+                rating += em.Contains("Euro 6") ? 5 : 
+                          em.Contains("Euro 5") ? 4 : 0;
+            }
+
+
+            return rating > 0 ? rating.ToString("0") : "N/A";
+        }
+        catch
+        {
+            return "N/A";
+        }
+    }
+
 
     static string AddQueryString(string uri, List<KeyValuePair<string, string>> parameters)
     {
@@ -194,7 +304,7 @@ class CarScraper
         }
 
         if (parameters.Count > 0)
-            sb.Length--; // remove last &
+            sb.Length--;
 
         return sb.ToString();
     }
